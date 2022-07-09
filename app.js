@@ -1,4 +1,10 @@
 let kittens = []
+let moods = ["vampire", "sad", "content", "happy", "ecstatic"]
+let defaultMood = "content"
+let defaultAffection = 3
+const minAffection = 1
+const maxAffection = 5
+
 /**
  * Called when submitting the new Kitten Form
  * This method will pull data from the form
@@ -10,6 +16,26 @@ function addKitten(event) {
   event.preventDefault()
 
   let form = event.target
+  let name = form.name.value
+
+  console.log(name)
+
+  let currentKitten = kittens.find(kitten => kitten?.name === name)
+
+  if (!currentKitten) {
+    let newKitten = {
+      id: generateId(),
+      name: name,
+      mood: defaultMood,
+      affection: defaultAffection
+    }
+    kittens.push(newKitten)
+    console.log(newKitten)
+    saveKittens()
+  } else {
+    console.log("Already existing kitten: ", currentKitten?.name)
+    alert("Kitten already exists!")
+  }
 
   form.reset()
 }
@@ -19,6 +45,10 @@ function addKitten(event) {
  * Saves the string to localstorage at the key kittens 
  */
 function saveKittens() {
+  console.log("Saving the kittens!")
+  console.log(kittens)
+  window.localStorage.setItem("kittens", JSON.stringify(kittens))
+  drawKittens()
 }
 
 /**
@@ -27,6 +57,10 @@ function saveKittens() {
  * the kittens array to the retrieved array
  */
 function loadKittens() {
+  let kittensData = JSON.parse(window.localStorage.getItem("kittens"))
+  if (kittensData) {
+    kittens = kittensData
+  }
 }
 
 /**
@@ -84,9 +118,13 @@ function clearKittens(){
  * list of kittens to the page. Good Luck
  */
 function getStarted() {
-  document.getElementById("welcome").remove();
+  document.getElementById("welcome")?.remove();
   console.log('Good Luck, Take it away')
-  document.getElementById("kitten-name-input").focus()
+  if (kittens.length === 0) (
+    document.getElementById("welcome-message")?.classList.remove("hidden")
+  )
+  document.getElementById("kitten-name-form")?.classList.remove("hidden")
+  document.getElementById("kitten-name-input")?.focus()
 }
 
 
@@ -108,3 +146,4 @@ function generateId() {
 }
 
 loadKittens();
+drawKittens();

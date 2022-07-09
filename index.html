@@ -16,7 +16,7 @@
 <body>
   <header class="bg-dark d-flex align-items-center p-1 space-between">
     <img src="moody-logo.png" height="60" alt="Moody Kittens">
-    <form id="kitten-name-form" class="" onsubmit="addKitten(event)">
+    <form id="kitten-name-form" class="hidden" onsubmit="addKitten(event)">
       <div class="d-flex">
         <input id="kitten-name-input" placeholder="Name" type="text" name="name" />
         <button class="btn-special" type="submit">
@@ -38,6 +38,9 @@
           <button onclick="getStarted()">Get Started</button>
         </div>
       </div>
+    </div>
+    <div>
+      <span id="welcome-message" class="text-center hidden">Please add a kitten</span>
     </div>
     <div class="p-2">
       <div id="kittens" class="d-flex align-items-center flex-wrap">
