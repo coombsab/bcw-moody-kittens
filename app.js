@@ -20,7 +20,7 @@ function addKitten(event) {
 
   console.log(name)
 
-  let currentKitten = kittens.find(kitten => kitten?.name === name)
+  let currentKitten = kittens.find(kitten => kitten?.name.toUpperCase() === name.toUpperCase())
 
   if (!currentKitten) {
     let newKitten = {
@@ -67,6 +67,21 @@ function loadKittens() {
  * Draw all of the kittens to the kittens element
  */
 function drawKittens() {
+  let template = ""
+
+  kittens.sort(function(a, b) {
+    let textA = a.name.toUpperCase()
+    let textB = b.name.toUpperCase()
+    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+  })
+
+  kittens.forEach(kitten => {
+    template+= `
+      <div class="card">${kitten.name}</div>
+    `
+  })
+
+  document.getElementById("kittens").innerHTML = template
 }
 
 
@@ -123,6 +138,7 @@ function getStarted() {
   if (kittens.length === 0) (
     document.getElementById("welcome-message")?.classList.remove("hidden")
   )
+  document.getElementById("kittens")?.classList.remove("hidden")
   document.getElementById("kitten-name-form")?.classList.remove("hidden")
   document.getElementById("kitten-name-input")?.focus()
 }
