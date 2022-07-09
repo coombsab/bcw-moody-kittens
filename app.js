@@ -7,6 +7,11 @@ let kittens = []
  * Then reset the form
  */
 function addKitten(event) {
+  event.preventDefault()
+
+  let form = event.target
+
+  form.reset()
 }
 
 /**
@@ -81,6 +86,7 @@ function clearKittens(){
 function getStarted() {
   document.getElementById("welcome").remove();
   console.log('Good Luck, Take it away')
+  document.getElementById("kitten-name-input").focus()
 }
 
 
