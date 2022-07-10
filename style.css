@@ -13,6 +13,7 @@
   --dark-lighten: #504c4c;
   --light: #fdfdfd;
   --danger: #ff3737;
+  --drop-shadow-pixels: 0 0 15px
 }
 
 body{
@@ -127,6 +128,33 @@ button.btn-special:hover{
   filter: drop-shadow(var(--shadow));
 }
 
+.kittenTest{
+  filter: drop-shadow(0 0 30px red)
+}
+
+.ecstatic{
+  filter: drop-shadow(var(--drop-shadow-pixels) goldenrod);
+}
+
+.happy{
+  filter: drop-shadow(var(--drop-shadow-pixels) deeppink);
+}
+
+.content{
+  filter: none;
+}
+
+.sad{
+  filter: drop-shadow(var(--drop-shadow-pixels) blue);
+}
+
+.angry{
+  filter: drop-shadow(var(--drop-shadow-pixels) red);
+}
+
+.gone{
+  filter: invert();
+}
 
 .kitten img{
   filter: drop-shadow(2px 4px 6px #1b1b1b);

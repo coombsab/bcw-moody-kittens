@@ -1,6 +1,12 @@
 let kittens = []
-let moods = ["vampire", "sad", "content", "happy", "ecstatic"]
-let defaultMood = "content"
+let moods = [
+  "gone",
+  "angry",
+  "sad",
+  "content",
+  "happy",
+  "ecstatic"
+]
 let defaultAffection = 3
 const minAffection = 1
 const maxAffection = 5
@@ -26,7 +32,7 @@ function addKitten(event) {
     let newKitten = {
       id: generateId(),
       name: name,
-      mood: defaultMood,
+      mood: moods[defaultAffection],
       affection: defaultAffection
     }
     kittens.push(newKitten)
@@ -45,8 +51,6 @@ function addKitten(event) {
  * Saves the string to localstorage at the key kittens 
  */
 function saveKittens() {
-  console.log("Saving the kittens!")
-  console.log(kittens)
   window.localStorage.setItem("kittens", JSON.stringify(kittens))
   drawKittens()
 }
@@ -77,7 +81,16 @@ function drawKittens() {
 
   kittens.forEach(kitten => {
     template+= `
-      <div class="card">${kitten.name}</div>
+      <div class="card m-1">
+        <label class="text-center">${kitten.name}</label>
+        <img id="image-${kitten.id}" class="${kitten.mood}" src="kittenTransparent.png" alt="No Image">
+        <label class="text-center">Mood: ${kitten.mood}</label>
+        <div class="text-center">
+          <button id="button-pet" onclick="pet('${kitten.id}')">Pet</button>
+          <button id="button-punish" onclick="punish('${kitten.id}')">Punish</button>
+          <i id="delete-kitten-icon" class="fa fa-trash" aria-hidden="true" onclick="deleteKitten('${kitten.id}')"></i>
+        </div>
+      </div>
     `
   })
 
@@ -103,6 +116,13 @@ function findKittenById(id) {
  * @param {string} id 
  */
 function pet(id) {
+  let currentKitten = kittens.find(kitten => kitten.id === id)
+  console.log(currentKitten.name + " was " + currentKitten.mood + " : " + currentKitten.affection)
+  if (currentKitten.affection < 5) {
+    currentKitten.affection++
+    saveKittens()
+    setKittenMood(currentKitten)
+  }
 }
 
 /**
@@ -110,8 +130,16 @@ function pet(id) {
  * Set the kitten's mood to tolerant
  * Set the kitten's affection to 5
  * @param {string} id
+ * TODO Remove negative affection
  */
-function catnip(id) {
+function punish(id) {
+  let currentKitten = kittens.find(kitten => kitten.id === id)
+  console.log(currentKitten.name + " was " + currentKitten.mood + " : " + currentKitten.affection)
+  if (currentKitten.affection > 0) {
+    currentKitten.affection--
+    saveKittens()
+    setKittenMood(currentKitten)
+  }
 }
 
 /**
@@ -119,6 +147,14 @@ function catnip(id) {
  * @param {Kitten} kitten 
  */
 function setKittenMood(kitten) {
+  //moods - Gone: 0 Angry: 1 Sad: 2 Content: 3 Happy: 4 Ecstatic: 5
+  let elementID = "image-" + kitten.id
+  document.getElementById(elementID)?.classList.remove(kitten.mood)
+  kitten.mood = moods[kitten.affection]
+  saveKittens()
+  document.getElementById(elementID)?.classList.add(kitten.mood)
+  console.log(kitten.name + " is now " + kitten.mood + " : " + kitten.affection)
+  drawKittens()
 }
 
 /**
@@ -126,6 +162,12 @@ function setKittenMood(kitten) {
  * remember to save this change
  */
 function clearKittens(){
+}
+
+function deleteKitten(id) {
+  let index = kittens.findIndex(kitten => kitten.id === id)
+  let removed = kittens.splice(index, 1)
+  saveKittens()
 }
 
 /**
