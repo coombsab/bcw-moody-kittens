@@ -270,6 +270,10 @@ button.btn-special:hover{
   width: 50%;
 }
 
+.warning {
+  color: red;
+}
+
 @media screen and (max-width: 700px) {
   .w-50 {
     width: 90%
