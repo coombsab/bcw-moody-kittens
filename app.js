@@ -55,9 +55,6 @@ function addKitten(event) {
 
   let form = event.target
   let name = form.name.value
-
-  console.log(name)
-
   let currentKitten = kittens.find(kitten => kitten?.name.toUpperCase() === name.toUpperCase())
 
   if (!currentKitten) {
@@ -69,10 +66,8 @@ function addKitten(event) {
       inventory: {}
     }
     kittens.push(newKitten)
-    console.log(newKitten)
     saveKittens()
   } else {
-    console.log("Already existing kitten: ", currentKitten?.name)
     alert("Kitten already exists!")
   }
 
@@ -115,16 +110,17 @@ function drawKittens() {
   kittens.forEach(kitten => {
     template+= `
       <div class="card m-1">
-        <label class="text-center">${kitten.name}</label>
-        <img id="image-${kitten.id}" class="${kitten.mood.name}" src="kittenTransparent.png" alt="No Image">
+        <label id="label-kitten-name" class="text-center">${kitten.name}</label>
+        <img id="image-${kitten.id}" class="kitten ${kitten.mood.name}" src="kittenTransparent.png" alt="No Image">
         <label class="text-center">Mood: ${kitten.mood.name}</label>
+        <label class="text-center">Affection: ${kitten.affection.toString().indexOf(".") >= 0 ? kitten.affection.toString().slice(0,kitten.affection.toString().indexOf(".") + 3) : kitten.affection}%</label>
         <div class="text-center">
           <div>
-            <button id="button-pet" onclick="pet('${kitten.id}')">Pet</button>
-            <button id="button-catnip" onclick="catnip('${kitten.id}')">Catnip</button>
-            <button id="button-adventure" onclick="adventure('${kitten.id}')">Adventure</button>
+            <button id="button-pet" title="Increases affection by ${petAffectionChange * 100}%" onclick="pet('${kitten.id}')">Pet</button>
+            <button id="button-catnip" title="Increases affection by ${catnipAffectionChange * 100}%" onclick="catnip('${kitten.id}')">Catnip</button>
+            <button id="button-adventure" title="Decreases affection by ${adventureAffectionChange * 100}%" onclick="adventure('${kitten.id}')">Adventure</button>
           </div>
-          <i id="delete-kitten-icon" class="fa fa-trash" aria-hidden="true" onclick="deleteKitten('${kitten.id}')"></i>
+          <i id="delete-kitten-icon" title="Removes the kitten" class="fa fa-trash" aria-hidden="true" onclick="deleteKitten('${kitten.id}')"></i>
         </div>
       </div>
     `
@@ -154,7 +150,6 @@ function findKittenById(id) {
  */
 function pet(id) {
   let currentKitten = findKittenById(id)
-  console.log(currentKitten.name + " was " + currentKitten.mood.name + " : " + currentKitten.affection)
   currentKitten.affection += currentKitten.affection * petAffectionChange
   if (currentKitten.affection > maxAffection) {
     currentKitten.affection = maxAffection
@@ -165,7 +160,6 @@ function pet(id) {
 
 function catnip(id) {
   let currentKitten = findKittenById(id)
-  console.log(currentKitten.name + " was " + currentKitten.mood.name + " : " + currentKitten.affection)
   currentKitten.affection += currentKitten.affection * catnipAffectionChange
   if (currentKitten.affection > maxAffection) {
     currentKitten.affection = maxAffection
@@ -183,7 +177,6 @@ function catnip(id) {
  */
 function adventure(id) {
   let currentKitten = findKittenById(id)
-  console.log(currentKitten.name + " was " + currentKitten.mood.name + " : " + currentKitten.affection)
   currentKitten.affection -= currentKitten.affection * adventureAffectionChange
   if (currentKitten.affection < minAffection) {
     currentKitten.affection = minAffection
@@ -204,7 +197,6 @@ function setKittenMood(kitten) {
     if (moods.hasOwnProperty(mood)) {
       let tempMood = moods[mood]
       if (kitten.affection >= tempMood.affection) {
-        // console.log(`${kitten.affection} : ${tempMood.affection}`)
         currentMood = tempMood
       }
     }
@@ -212,7 +204,6 @@ function setKittenMood(kitten) {
   kitten.mood = currentMood
   saveKittens()
   document.getElementById(elementID)?.classList.add(kitten.mood.name)
-  console.log(`${kitten.name} is now ${kitten.mood.name} with ${kitten.affection}% affection`)
   if (kitten.mood === moods.gone) {
     kitten.affection = minAffection
   }
@@ -238,7 +229,6 @@ function deleteKitten(id) {
  */
 function getStarted() {
   document.getElementById("welcome")?.remove();
-  console.log('Good Luck, Take it away')
   if (kittens.length === 0) (
     document.getElementById("welcome-message")?.classList.remove("hidden")
   )

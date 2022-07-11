@@ -56,6 +56,10 @@ label{
   font-size: 12pt;
 }
 
+#label-kitten-name {
+  font-size: 20pt;
+}
+
 input{
   width: 100%;
   padding: .375rem .75rem;
@@ -128,53 +132,32 @@ button.btn-special:hover{
   filter: drop-shadow(var(--shadow));
 }
 
-.kittenTest{
-  filter: drop-shadow(0 0 30px red)
+.kitten {
+  transition: all 0.35s ease;
 }
 
-.ecstatic{
+.kitten.ecstatic{
   filter: drop-shadow(var(--drop-shadow-pixels) goldenrod);
 }
 
-.happy{
+.kitten.happy{
   filter: drop-shadow(var(--drop-shadow-pixels) deeppink);
 }
 
-.content{
+.kitten.content{
   filter: none;
 }
 
-.sad{
+.kitten.sad{
   filter: drop-shadow(var(--drop-shadow-pixels) blue);
 }
 
-.angry{
+.kitten.angry{
   filter: drop-shadow(var(--drop-shadow-pixels) red);
 }
 
-.gone{
-  filter: invert();
-}
-
-.kitten img{
-  filter: drop-shadow(2px 4px 6px #1b1b1b);
-  transition: all .35s ease;
-}
-.kitten.happy img{
-  filter: drop-shadow(2px 4px 6px #00ffb3);
-}
-.kitten.tolerant img{
-  filter: drop-shadow(2px 4px 6px #646464);
-}
-.kitten.angry img{
-  filter: drop-shadow(2px 4px 6px #ff0000) contrast(1);
-}
-.kitten.gone img{
-  filter: drop-shadow(2px 4px 6px #ff0000) contrast(0);
-}
 .kitten.gone{
-  color: var(--danger);
-  pointer-events: none;
+  filter: invert();
 }
 
 .bg-dark{
