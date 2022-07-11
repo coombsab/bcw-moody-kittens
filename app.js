@@ -33,12 +33,14 @@ const maxAffection = 100
 const petAffectionChange = 0.05
 const catnipAffectionChange = 0.15
 const adventureAffectionChange = 0.1
+const startingCatnip = 2
+const warningThreshold = 20
 
 //#region ITEM LIST
 
-let catnipItem = {
-  name: "catnip",
-  quantity: 0
+function itemCatnip (quantity) {
+  this.name = "catnip"
+  this.quantity =  quantity
 }
 
 //#endregion  END OF ITEM LIST
@@ -65,6 +67,7 @@ function addKitten(event) {
       affection: defaultAffection,
       inventory: {}
     }
+    newKitten.inventory["itemCatnip"] = new itemCatnip(startingCatnip)
     kittens.push(newKitten)
     saveKittens()
   } else {
@@ -108,6 +111,9 @@ function drawKittens() {
   })
 
   kittens.forEach(kitten => {
+    if (!kitten.inventory.hasOwnProperty("itemCatnip")) {
+      kitten.inventory["itemCatnip"] = new itemCatnip(startingCatnip)
+    }
     template+= `
       <div class="card m-1">
         <label id="label-kitten-name" class="text-center">${kitten.name}</label>
@@ -117,7 +123,7 @@ function drawKittens() {
         <div class="text-center">
           <div>
             <button id="button-pet" title="Increases affection by ${petAffectionChange * 100}%" onclick="pet('${kitten.id}')">Pet</button>
-            <button id="button-catnip" title="Increases affection by ${catnipAffectionChange * 100}%" onclick="catnip('${kitten.id}')">Catnip</button>
+            <button id="button-catnip" title="Increases affection by ${catnipAffectionChange * 100}%" onclick="catnip('${kitten.id}')">Catnip: ${kitten.inventory.itemCatnip.quantity}</button>
             <button id="button-adventure" title="Decreases affection by ${adventureAffectionChange * 100}%" onclick="adventure('${kitten.id}')">Adventure</button>
           </div>
           <i id="delete-kitten-icon" title="Removes the kitten" class="fa fa-trash" aria-hidden="true" onclick="deleteKitten('${kitten.id}')"></i>
@@ -149,23 +155,31 @@ function findKittenById(id) {
  * @param {string} id 
  */
 function pet(id) {
-  let currentKitten = findKittenById(id)
-  currentKitten.affection += currentKitten.affection * petAffectionChange
-  if (currentKitten.affection > maxAffection) {
-    currentKitten.affection = maxAffection
+  if (!isGone(id)) {
+    let currentKitten = findKittenById(id)
+    currentKitten.affection += currentKitten.affection * petAffectionChange
+    if (currentKitten.affection > maxAffection) {
+      currentKitten.affection = maxAffection
+    }
+    saveKittens()
+    setKittenMood(currentKitten)
   }
-  saveKittens()
-  setKittenMood(currentKitten)
 }
 
 function catnip(id) {
-  let currentKitten = findKittenById(id)
-  currentKitten.affection += currentKitten.affection * catnipAffectionChange
-  if (currentKitten.affection > maxAffection) {
-    currentKitten.affection = maxAffection
+  if (!isGone(id)) {
+    let currentKitten = findKittenById(id)
+    
+    if (currentKitten.inventory.itemCatnip.quantity > 0) {
+      currentKitten.affection += currentKitten.affection * catnipAffectionChange
+      if (currentKitten.affection > maxAffection) {
+        currentKitten.affection = maxAffection
+      }
+      currentKitten.inventory.itemCatnip.quantity--
+      saveKittens()
+      setKittenMood(currentKitten)
+    }
   }
-  saveKittens()
-  setKittenMood(currentKitten)
 }
 
 /**
@@ -176,13 +190,24 @@ function catnip(id) {
  * TODO Remove negative affection
  */
 function adventure(id) {
-  let currentKitten = findKittenById(id)
-  currentKitten.affection -= currentKitten.affection * adventureAffectionChange
-  if (currentKitten.affection < minAffection) {
-    currentKitten.affection = minAffection
+  if (!isGone(id)) {
+    let currentKitten = findKittenById(id)
+    currentKitten.affection -= currentKitten.affection * adventureAffectionChange
+    if (currentKitten.affection < minAffection) {
+      currentKitten.affection = minAffection
+    }
+    let discoveredCatnip = randomIntFromInterval(0, 1)
+    if (discoveredCatnip > 0) {
+      alert(`${currentKitten.name} found ${discoveredCatnip} catnip!`)
+      if (currentKitten.inventory.hasOwnProperty("itemCatnip")) {
+        currentKitten.inventory.itemCatnip.quantity += discoveredCatnip
+      } else {
+        currentKitten.inventory["itemCatnip"] = new itemCatnip(discoveredCatnip)
+      }
+    }
+    saveKittens()
+    setKittenMood(currentKitten)
   }
-  saveKittens()
-  setKittenMood(currentKitten)
 }
 
 /**
@@ -207,6 +232,9 @@ function setKittenMood(kitten) {
   if (kitten.mood === moods.gone) {
     kitten.affection = minAffection
   }
+  if(kitten.affection <= warningThreshold && !isGone(kitten.id)) {
+    alert(`${kitten.name} will run away when affection drops below 15%!`)
+  }
   drawKittens()
 }
 
@@ -221,6 +249,11 @@ function deleteKitten(id) {
   let index = kittens.findIndex(kitten => kitten.id === id)
   let removed = kittens.splice(index, 1)
   saveKittens()
+}
+
+function isGone(id) {
+  let currentKitten = findKittenById(id)
+  return currentKitten.mood === moods.gone
 }
 
 /**
@@ -242,7 +275,7 @@ function getStarted() {
 
 /**
  * Defines the Properties of a Kitten
- * @typedef {{name: string, mood: string, affection: number}} Kitten
+ * @typedef {{id: string, name: string, mood: object, affection: number, inventory: object}} Kitten
  */
 
 
@@ -253,6 +286,10 @@ function getStarted() {
  */
 function generateId() {
   return Math.floor(Math.random() * 10000000) + "-" + Math.floor(Math.random() * 10000000)
+}
+
+function randomIntFromInterval(min, max) { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
 loadKittens();
